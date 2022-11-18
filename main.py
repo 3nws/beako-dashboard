@@ -4,6 +4,7 @@ import json
 import time
 import kivy
 
+from kivy.core.window import Window
 from kivy.app import App
 from kivy.properties import StringProperty
 from kivy.uix.boxlayout import BoxLayout
@@ -33,20 +34,17 @@ class BeakoStats(BoxLayout):
         self.socket_th.start()
 
     def listen(self):
-        print("# Creating socket")
         try:
             self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         except socket.error:
             print("Failed to create socket")
             sys.exit()
-        print("# Getting remote IP address")
         try:
             self.remote_ip = socket.gethostbyname(host)
         except socket.gaierror:
             print("Hostname could not be resolved. Exiting")
             sys.exit()
 
-        print("# Connecting to server, " + host + " (" + self.remote_ip + ")")
         while True:
             try:
                 reply = self.s.recv(4096)
@@ -65,7 +63,6 @@ class BeakoStats(BoxLayout):
                     {"name.text": str(namespace[0]), "value": str(namespace[-1])}
                     for namespace in namespaces
                 ]
-                time.sleep(1)
             except OSError:
                 try:
                     self.s.connect((self.remote_ip, port))
@@ -75,11 +72,12 @@ class BeakoStats(BoxLayout):
 
 class BeakoStatsApp(App):
     def build(self):
+        Window.bind(on_request_close=self.on_request_close)
+        Window.size = (1024, 768)
         self.stats = BeakoStats()
         return self.stats
 
     def on_request_close(self, *args):
-        print("here")
         self.stats.s.close()
         self.stats.socket_th.join()
         return False
