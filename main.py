@@ -1,7 +1,6 @@
 import socket
 import sys
 import json
-import time
 import kivy
 
 from kivy.core.window import Window
@@ -11,6 +10,8 @@ from kivy.uix.boxlayout import BoxLayout
 
 from threading import Thread
 
+from config import HOST
+
 kivy.require("2.1.0")
 
 from kivy.config import Config
@@ -19,8 +20,8 @@ Config.set("graphics", "width", "1024")
 Config.set("graphics", "height", "1024")
 
 
-host = "127.0.0.1"
-port = 15555
+host = HOST
+port = 5555
 
 
 class BeakoStats(BoxLayout):
